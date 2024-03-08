@@ -1,16 +1,37 @@
 import { useQuery } from "@tanstack/react-query";
 import { getCategory } from "../../services/admin";
 import Loader from "../module/Loader";
+import { useState } from "react";
 
 function AddPost() {
+  const [form, setForm] = useState({
+    title: "",
+    description: "",
+    category: "",
+    city: "",
+    amount: null,
+    image: null,
+  });
   const { data, isLoading } = useQuery(["get-categories"], getCategory);
 
   if (isLoading) return <Loader />;
 
-  console.log(data);
+  const changeHandler = (event) => {
+    const name = event.target.name;
+    if (event.target.name !== "image") {
+      setForm({ ...form, [name]: event.target.value });
+    } else {
+      setForm({ ...form, [name]: event.target.files[0] });
+    }
+  };
+
+  const addHandler = (event) => {
+    event.preventDefault();
+    console.log(form);
+  };
 
   return (
-    <form>
+    <form onChange={changeHandler}>
       <h3>افزودن آگهی</h3>
       <label htmlFor="title">عنوان</label>
       <input type="text" name="title" id="title" />
@@ -30,6 +51,7 @@ function AddPost() {
       </select>
       <label htmlFor="image">تصویر</label>
       <input type="file" name="image" id="image" />
+      <button onClick={addHandler}>ثبت</button>
     </form>
   );
 }
