@@ -14,7 +14,6 @@ function CategoryForm() {
       onSuccess: () => queryClient.invalidateQueries("get-categories"),
     }
   );
-  console.log({ isLoading, error, data });
 
   const changeHandler = (event) => {
     setForm({ ...form, [event.target.name]: event.target.value });
@@ -22,7 +21,7 @@ function CategoryForm() {
 
   const submitHandler = (event) => {
     event.preventDefault();
-    console.log(form);
+
     if (!form.name || !form.icon || !form.slug) return;
     mutate(form);
     {

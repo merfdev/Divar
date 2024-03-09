@@ -3,14 +3,19 @@ import { getCategory } from "../../services/admin";
 import Loader from "../module/Loader";
 import { useState } from "react";
 
+import styles from "./AddPost.module.css";
+import { getCookie } from "../../utils/cookie";
+import axios from "axios";
+import toast from "react-hot-toast";
+
 function AddPost() {
   const [form, setForm] = useState({
     title: "",
-    description: "",
+    content: "",
     category: "",
     city: "",
     amount: null,
-    image: null,
+    images: null,
   });
   const { data, isLoading } = useQuery(["get-categories"], getCategory);
 
@@ -18,7 +23,7 @@ function AddPost() {
 
   const changeHandler = (event) => {
     const name = event.target.name;
-    if (event.target.name !== "image") {
+    if (name !== "images") {
       setForm({ ...form, [name]: event.target.value });
     } else {
       setForm({ ...form, [name]: event.target.files[0] });
@@ -27,16 +32,29 @@ function AddPost() {
 
   const addHandler = (event) => {
     event.preventDefault();
-    console.log(form);
+    const formData = new FormData();
+    for (let i in form) {
+      formData.append(i, form[i]);
+    }
+    const token = getCookie("accessToken");
+    axios
+      .post(`${import.meta.env.VITE_BASE_URL}post/create`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `bearer ${token}`,
+        },
+      })
+      .then((res) => toast.success("آگهی با موفقیت اضافه شد"))
+      .catch((error) => toast.error(error.message));
   };
 
   return (
-    <form onChange={changeHandler}>
+    <form onChange={changeHandler} className={styles.form}>
       <h3>افزودن آگهی</h3>
       <label htmlFor="title">عنوان</label>
       <input type="text" name="title" id="title" />
-      <label htmlFor="description">توضیحات</label>
-      <textarea name="description" id="description" />
+      <label htmlFor="content">توضیحات</label>
+      <textarea name="content" id="content" />
       <label htmlFor="amount">قمیت</label>
       <input type="number" name="amount" id="amount" />
       <label htmlFor="city">شهر</label>
@@ -49,8 +67,8 @@ function AddPost() {
           </option>
         ))}
       </select>
-      <label htmlFor="image">تصویر</label>
-      <input type="file" name="image" id="image" />
+      <label htmlFor="images">تصویر</label>
+      <input type="file" name="images" id="images" />
       <button onClick={addHandler}>ثبت</button>
     </form>
   );

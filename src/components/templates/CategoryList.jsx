@@ -3,15 +3,18 @@ import { deleteCategory, getCategory } from "../../services/admin";
 import Loader from "../module/Loader";
 
 import styles from "./CategoryList.module.css";
+import toast from "react-hot-toast";
 
 function CategoryList() {
   const queryClient = useQueryClient();
   const { data, isLoading, error } = useQuery(["get-categories"], getCategory);
   const { mutate } = useMutation(deleteCategory, {
-    onSuccess: () => queryClient.invalidateQueries("get-categoires"),
+    onSuccess: () =>
+      queryClient.invalidateQueries(
+        "get-categoires" && toast.success("با موفقیت حذف شد")
+      ),
   });
 
-  console.log({ data, isLoading, error });
   return (
     <div className={styles.list}>
       {isLoading ? (

@@ -1,3 +1,4 @@
+import toast from "react-hot-toast";
 import { sendOtp } from "../../services/auth";
 
 import styles from "./SendOtpForm.module.css";
@@ -8,8 +9,7 @@ function SendOtpForm({ mobile, setMobile, setStep }) {
     if (mobile.length !== 11) return;
     const { response, error } = await sendOtp(mobile);
     if (response) setStep(2);
-    if (error) console.log(error.response.data.message);
-    console.log(response);
+    if (error) toast.error(error.response.data.message);
   };
 
   return (

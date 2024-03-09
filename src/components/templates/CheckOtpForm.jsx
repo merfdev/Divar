@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getProfile } from "../../services/user";
 
 import styles from "./CheckOtpForm.module.css";
+import toast from "react-hot-toast";
 
 function CheckOtpForm({ mobile, code, setCode, setStep }) {
   const navigate = useNavigate();
@@ -13,14 +14,14 @@ function CheckOtpForm({ mobile, code, setCode, setStep }) {
     event.preventDefault();
     if (code.length !== 5) return;
     const { response, error } = await checkOtp(mobile, code);
-    console.log({ response, error });
+
     if (response) {
       setCookie(response.data);
       navigate("/");
       refetch();
     }
     if (error) {
-      console.log(error.response.data.message);
+      toast.error(error.response.data.message);
     }
   };
   return (
